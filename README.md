@@ -27,7 +27,7 @@ kubectl apply -f HomePod/homepod.yaml
 ## 2. 登录
 支持两种方式访问：
 - 1，浏览器(http://your_host:7030);
-- 2，VNC客户端(KDE Linux用户直接使用自带的KRDC客户端，其它系统自行下载vnc客户端)。
+- 2，realvnc客户端：https://www.realvnc.com/en/connect/download/viewer/ 。
 
 其中，浏览器方式的优点是方便；VNC客户端方式的优点是流畅，且功能更多。
 
