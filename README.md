@@ -20,6 +20,7 @@ MLab HomePod是我们的深度学习训练环境，以Docker image形式封装�
 - 使用比较新版本的CUDA；
 - 使用比较新版本的MKL；
 - 使用最新版本的vs code IDE；
+- 使用最新版本的Chrome浏览器；
 - 包含有kdiff3、kompare等诸多开发工具。
 
 目前我们开源了HomePod for PyTorch。
