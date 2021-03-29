@@ -128,6 +128,7 @@ git checkout -b feature_1
 #同步到MLab
 git push mlab feature_1
 ```
+注意：完成上述步骤后，办公电脑上该仓库就停留在feature_1分支上。
 
 #### 6.4 在HomePod上开发、测试、提交
 以下步骤在HomePod上：
@@ -148,7 +149,7 @@ git push feature_1
 ```
 
 #### 6.5 在办公电脑上同步feature_1分支
-以下步骤在办公电脑上：
+以下步骤在办公电脑上，且在之前停留的feature_1分支上：
 ```bash
 #同步feature_1分支
 git fetch mlab
