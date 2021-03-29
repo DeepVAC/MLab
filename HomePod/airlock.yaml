@@ -1,30 +1,29 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: mlab-homepod
-  namespace: mlab2 
+  name: airlock
+  namespace: mlab2
   labels:
-    app: mlab-homepod
-    group: deepvac
+    app: airlock
 spec:
-  nodeName: ai03
+  nodeName: ai05
   containers:
-  - name: mlab-homepod 
+  - name: airlock 
     image: gemfield/deepvac:11.0.3-cudnn8-devel-ubuntu20.04
     imagePullPolicy: IfNotPresent 
-    workingDir: /home/gemfield 
+    workingDir: /opt/public/airlock
     env:
     - name: TZ 
       value: Asia/Shanghai
     - name: HOME
-      value: /please_cd_to/home/gemfield
+      value: /please_cd_to/opt/public/airlock
     - name: DEEPVAC_USER
       value: gemfield
     resources:
       requests:
-        memory: "6Gi"
+        memory: "3Gi"
       limits:
-        memory: "24Gi" 
+        memory: "16Gi" 
     ports:
     - name: tensorboard
       containerPort: 6006
@@ -41,18 +40,9 @@ spec:
     volumeMounts:
     - mountPath: /dev/shm
       name: dshm
-    - name: home4gemfield
-      mountPath: /home/gemfield
-    - name: hostpvds
-      mountPath: /gemfield/hostpv
-    - name: hostpvds2
-      mountPath: /gemfield/hostpv2
-    - name: publicds
-      mountPath: /opt/public
-      readOnly: true
-    - name: privateds
-      mountPath: /opt/private
-      readOnly: true
+    - name: publicspace
+      mountPath: /opt/public/airlock
+      subPath: airlock
   hostNetwork: false
   restartPolicy: Always 
   volumes:
@@ -60,32 +50,20 @@ spec:
     emptyDir:
       medium: Memory
       sizeLimit: "2Gi"
-  - name: home4gemfield
-    persistentVolumeClaim:
-       claimName: gemfield
-  - name: publicds
+  - name: publicspace
     persistentVolumeClaim:
        claimName: public-dataset
-  - name: privateds
-    persistentVolumeClaim:
-       claimName: private-dataset
-  - name: hostpvds
-    persistentVolumeClaim:
-        claimName: ai3-hostpvc
-  - name: hostpvds2
-    persistentVolumeClaim:
-        claimName: ai3-hostpvc2
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: gemfield-service
+  name: airlock-service
   namespace: mlab2
   labels:
-    app: mlab-homepod
+    app: airlock
 spec:
   externalIPs:
-    - 192.168.0.34
+    - 192.168.0.168
   ports:
     - port: 6007
       targetPort: 6006
@@ -97,4 +75,4 @@ spec:
       targetPort: 5900
       name: vnc
   selector:
-    app: mlab-homepod
+    app: airlock

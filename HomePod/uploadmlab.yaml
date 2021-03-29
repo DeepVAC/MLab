@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mlab-upload
+  namespace: mlab2
+  labels:
+    app: mlab-upload
+spec:
+  nodeName: ai05
+  containers:
+  - name: mlab-upload 
+    image: gemfield/filemanager
+    env:
+    - name: TZ 
+      value: Asia/Shanghai
+    ports:
+    - name: upload
+      containerPort: 8080
+    volumeMounts:
+    - name: mlab2up
+      mountPath: /codes/files
+      subPath: airlock
+  hostNetwork: false
+  restartPolicy: Always
+  volumes:
+  - name: mlab2up
+    persistentVolumeClaim:
+       claimName: public-dataset
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlab-upload-service
+  namespace: mlab2
+  labels:
+    app: mlab-upload
+spec:
+  externalIPs:
+    - 192.168.0.168
+  ports:
+    - port: 37030
+      targetPort: 8080
+      name: upload
+  selector:
+    app: mlab-upload
