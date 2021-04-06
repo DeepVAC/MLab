@@ -44,6 +44,7 @@ docker run --gpus all -it -p 7030:7030 -p 5900:5900 gemfield/deepvac:11.0.3-cudn
 kubectl apply -f HomePod/homepod.yaml
 kubectl apply -f HomePod/airlock.yaml
 kubectl apply -f HomePod/uploadmlab.yaml
+kubectl apply -f HomePod/network.yaml
 ```
 部署后可以在vnc客户端和浏览器中访问图形界面，这种方式适合小团队的协作和管理。
 

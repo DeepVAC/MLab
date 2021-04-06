@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: homepod-policy
+  namespace: mlab2
+spec:
+  podSelector: 
+    matchLabels:
+      group: deepvac
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - ipBlock:
+        cidr: 192.168.0.0/16
+    - ipBlock:
+        cidr: 172.17.0.0/16
+    ports:
+    - protocol: TCP
+      port: 5900
+    - protocol: TCP
+      port: 7030
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          app: gitlab
+      podSelector:
+        matchLabels:
+          app: gitlab
+    ports:
+    - protocol: TCP
+      port: 80
