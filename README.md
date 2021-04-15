@@ -90,7 +90,7 @@ HomePod为组织内部使用的开发环境，因此默认配有较为严格的�
 使用Airlock Pod。一旦数据来到Airlock Pod的/opt/public/airlock目录下，用户可以从自己的HomePod中拷贝到自己的HomePod本地。
 那么数据如何来到Airlock Pod的/opt/public/airlock目录下呢？有多种方法：
 - 在Airlock Pod上使用ftp、wget、scp、git等工具，从外部环境下载到此目录；
-- 使用http://ai5.gemfield.org:37030/files/filemanager 上传服务上传。
+- 使用http://ai5.gemfield.org:5212 上传服务上传（该服务支持webdav挂载到本地，详情请咨询管理员）。
 
 #### 5.2 HomePod上使用包管理工具（pip、apt等）安装软件包
 软件包按照被使用的普及程度分为两类：基础型软件包、特定软件包。  
