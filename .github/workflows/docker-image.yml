@@ -1,0 +1,22 @@
+name: Docker Image CI
+on:
+  push:
+    branches: 
+      - 'gemfield/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get short SHA
+      id: gemfield
+      run: echo "::set-output name=sha8::$(echo ${GITHUB_SHA} | cut -c1-8)"
+    - uses: actions/checkout@v2
+    - name: Login to DockerHub
+      uses: docker/login-action@v1 
+      with:
+        username: ${{ secrets.HUB_USERNAME }}
+        password: ${{ secrets.HUB_TOKEN }}
+    - name: Build the homepod base image
+      run: cd docker/11.0.3-cudnn8-devel-ubuntu20.04/ && docker build -t gemfield/homepod:11.0.3-cudnn8-devel-ubuntu20.04 .
+    - name: Push Docker image
+      run: docker push gemfield/homepod
