@@ -33,6 +33,7 @@ WORKDIR /.gemfield_install
 # libprotobuf, third party issue
 RUN git clone https://github.com/protocolbuffers/protobuf.git && \
     cd protobuf && \
+    git checkout --recurse-submodules tags/v${PROTOBUF_VER} -b v${PROTOBUF_VER}-branch && \
     git submodule update --init --recursive && \
     bash -x ./autogen.sh && \
     ./configure && \

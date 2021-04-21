@@ -19,4 +19,4 @@ jobs:
     - name: Build the homepod base image
       run: cd docker/11.0.3-cudnn8-devel-ubuntu20.04/ && docker build -t gemfield/homepod:11.0.3-cudnn8-devel-ubuntu20.04 .
     - name: Push Docker image
-      run: docker push gemfield/homepod
+      run: docker push gemfield/homepod:11.0.3-cudnn8-devel-ubuntu20.04
