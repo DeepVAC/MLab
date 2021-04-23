@@ -10,7 +10,7 @@ spec:
   nodeName: ai03
   containers:
   - name: mlab-homepod 
-    image: gemfield/deepvac:11.0.3-cudnn8-devel-ubuntu20.04
+    image: gemfield/homepod:1.1
     imagePullPolicy: IfNotPresent 
     workingDir: /home/gemfield 
     env:

@@ -13,29 +13,31 @@ MLab是为云上炼丹师服务的云基础设施。由以下部分组成：
 # MLab HomePod
 迄今为止最先进的容器化PyTorch训练环境。  
 MLab HomePod以Docker image形式封装，也是我们的深度学习训练环境。HomePod有着鲜明的特点：
-- 基于最新的Ubuntu LTS；
-- 基于LTS仓库中最新的KDE；
+- 基于最新的Ubuntu LTS(20.04)；
+- 基于最新的KDE Plasma(5.21.4);
+- 基于最新的KDE Framework(5.82.0);
 - 使用中国时区；
-- 使用最新版本的PyTorch；
-- 使用最新版本的Conda；
-- 使用比较新版本的CUDA；
-- 使用比较新版本的MKL；
-- 使用最新版本的VS Code IDE；
-- 使用最新版本的Chrome浏览器；
+- 使用最新版本的PyTorch(1.8.1+)；
+- 使用最新版本的Conda(4.9.2)；
+- 使用比较新版本的CUDA(11.0.3)；
+- 使用比较新版本的MKL(2020.4.304)；
+- 使用最新版本的VS Code IDE(1.55)；
+- 使用最新版本的Firefox浏览器(87.0)；
+- 使用IBus sunpinyin中文输入法(1.5.22);
 - 无缝使用Deepvac规范；
 - 无缝构建和测试libdeepvac；
-- 包含有kdiff3、kompare等诸多开发工具。
+- 包含有kdiff3、kompare、kdenlive、Dolphin、Kate、Gwenview、Konsole等诸多工具。
 
 ## 1. 部署
 MLab HomePod有三种部署方式：
 - 纯粹的Docker命令行方式：
 ```bash
-docker run --gpus all -it --entrypoint=/bin/bash gemfield/deepvac:11.0.3-cudnn8-devel-ubuntu20.04
+docker run --gpus all -it --entrypoint=/bin/bash gemfield/homepod:1.1
 ```
 部署且运行后只能在命令行里工作。
 - 图形化的Docker部署方式：
 ```bash
-docker run --gpus all -it -p 7030:7030 -p 5900:5900 gemfield/deepvac:11.0.3-cudnn8-devel-ubuntu20.04
+docker run --gpus all -it -p 7030:7030 -p 5900:5900 gemfield/homepod:1.1
 ```
 部署后可以在vnc客户端和浏览器中访问图形界面。
 - k8s集群部署方式（需要k8s集群运维经验，适合小团队的协作管理）：
