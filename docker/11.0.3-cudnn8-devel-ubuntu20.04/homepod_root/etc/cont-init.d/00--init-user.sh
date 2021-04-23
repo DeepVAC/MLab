@@ -30,6 +30,7 @@ echo "gemfield ALL=(ALL:ALL) ALL"  >> /etc/sudoers
 echo "GEMFIELD: may take long time if $HOME has too many files..."
 chown $DEEPVAC_USER:$DEEPVAC_USER -R "$HOME"
 #XDG_RUNTIME_DIR
+mkdir -p /run/gemfield
 chown $DEEPVAC_USER:$DEEPVAC_USER /run/gemfield
 chmod 7700 /run/gemfield
 
