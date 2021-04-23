@@ -52,11 +52,13 @@ RUN cd /tmp && \
     echo "deb http://archive.neon.kde.org/testing focal main" > /etc/apt/sources.list.d/neon.list && \
     echo "deb-src http://archive.neon.kde.org/testing focal main" >> /etc/apt/sources.list.d/neon.list && \
     apt-key add /public.key && \
+    add-apt-repository -y ppa:kdenlive/kdenlive-stable && \
     apt update && \
     apt install -y intel-mkl-64bit-${MKL_VER} code \
         ubuntu-minimal ubuntu-standard neon-desktop plasma-workspace-wayland kwin-wayland \
         kwin-wayland-backend-x11 kwin-wayland-backend-wayland kwin-x11 \
         okular kdiff3 kompare gwenview \
+        kdenlive \
         tigervnc-standalone-server tigervnc-xorg-extension && \
     apt dist-upgrade -y --allow-downgrades && \
     apt autoremove -y && \
