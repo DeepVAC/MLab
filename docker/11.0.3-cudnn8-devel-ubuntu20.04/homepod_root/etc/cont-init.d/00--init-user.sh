@@ -53,15 +53,5 @@ contrast=4
 widgetStyle=Breeze
 EOT
 
-cat <<EOT >> $HOME/.config/kwinrc
-[Compositing]
-Enabled=false
-EOT
-
 #MLab code DNS
-if [ -z "$MLAB_DNS" ]
-then
-  echo "[GEMFIELD] Warning: you may forget set MLAB_DNS"
-else
-  echo $MLAB_DNS >> /etc/hosts
-fi
+echo "$MLAB_DNS" >> /etc/hosts
