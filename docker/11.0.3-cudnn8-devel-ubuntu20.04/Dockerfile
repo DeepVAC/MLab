@@ -13,7 +13,7 @@ ARG MAGMA_CUDA_VER="110"
 #uncomment it in mainland china 
 #RUN rm -f /etc/apt/sources.list.d/cuda.list /etc/apt/sources.list.d/nvidia-ml.list
 ENV DEBIAN_FRONTEND=noninteractive
-
+ADD reduce_mkl_size.sh /
 #base
 RUN apt update && \
     mkdir /.gemfield_install && \
@@ -51,6 +51,7 @@ RUN cd /tmp && \
     apt dist-upgrade -y --allow-downgrades && \
     apt autoremove -y && \
     apt clean && \
+    bash -x /reduce_mkl_size.sh && \
     rm -rf /var/lib/apt/lists/*
 
 #env
@@ -86,10 +87,10 @@ ENV PGID=1000 \
 RUN ibus-daemon -r -d -x
 
 #conda
-RUN curl -o ~/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
-    chmod +x ~/miniconda.sh && \
-    ~/miniconda.sh -b -p /opt/conda && \
-    rm ~/miniconda.sh && \
+RUN curl -o /.gemfield_install/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
+    chmod +x /.gemfield_install/miniconda.sh && \
+    /.gemfield_install/miniconda.sh -b -p /opt/conda && \
+    rm /.gemfield_install/miniconda.sh && \
     /opt/conda/bin/conda install -y python=$PYTHON_VERSION conda-build anaconda-client numpy pyyaml scipy ipython mkl mkl-include \
         cffi ninja setuptools typing_extensions future six requests dataclasses cython typing conda-package-handling=${CONDA_PKG_HANDLE_VER} && \
     /opt/conda/bin/conda install -c pytorch magma-cuda${MAGMA_CUDA_VER} &&  \
