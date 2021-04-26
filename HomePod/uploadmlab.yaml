@@ -39,11 +39,11 @@ data:
     AllowHeaders = *
     AllowCredentials = false
 
-    ; ; Redis 相关
-    ; [Redis]
-    ; Server = 127.0.0.1:6379
-    ; Password =
-    ; DB = 0
+    ; Redis 相关
+    [Redis]
+    Server = 192.168.0.114:6379
+    Password = "passwdxxx"
+    DB = 3
 kind: ConfigMap
 metadata:
   name: cloudreveconf
