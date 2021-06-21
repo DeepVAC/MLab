@@ -1,8 +1,0 @@
-#!/usr/bin/with-contenv bash
-
-set -eu
-set -o pipefail
-
-export SHELL=/bin/bash
-exec s6-setuidgid $DEEPVAC_USER /usr/bin/Xvnc "$DISPLAY" -geometry "$SCR_WIDTH"x"$SCR_HEIGHT" -depth 16 -SecurityTypes none -AlwaysShared
-

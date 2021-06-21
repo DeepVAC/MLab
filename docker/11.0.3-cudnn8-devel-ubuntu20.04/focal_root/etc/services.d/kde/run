@@ -1,9 +1,0 @@
-#!/usr/bin/with-contenv bash
-
-set -eu
-set -o pipefail
-
-s6-svwait /var/run/s6/services/tigervnc
-
-
-exec s6-setuidgid $DEEPVAC_USER /usr/bin/startplasma-x11

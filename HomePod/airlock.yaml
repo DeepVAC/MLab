@@ -9,7 +9,7 @@ spec:
   nodeName: ai05
   containers:
   - name: airlock 
-    image: gemfield/deepvac:11.0.3-cudnn8-devel-ubuntu20.04
+    image: gemfield/homepod:1.1
     imagePullPolicy: IfNotPresent 
     workingDir: /opt/public/airlock
     env:
