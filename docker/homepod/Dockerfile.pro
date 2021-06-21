@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.0.3-cudnn8-devel-ubuntu20.04
+FROM nvidia/cuda:11.1.1-cudnn8-devel-ubuntu20.04
 maintainer "Gemfield <gemfield@civilnet.cn>"
 
 #uncomment it in mainland china 
@@ -26,15 +26,6 @@ RUN apt update && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
-#args
-EXPOSE 5900
-EXPOSE 7030
-EXPOSE 3389
-ARG PYTHON_VERSION=3.8
-ARG MKL_VER="2020.4-912"
-ARG PROTOBUF_VER="3.15.8"
-ARG CONDA_PKG_HANDLE_VER="1.6.0"
-ARG MAGMA_CUDA_VER="110"
 
 #vnc & boost & kde app
 RUN apt update && \
@@ -61,6 +52,12 @@ RUN ln -fs /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && dpkg-reconfigure 
 ENV LC_ALL zh_CN.UTF-8
 ENV LANG zh_CN.UTF-8
 ENV LANGUAGE zh_CN.UTF-8
+
+#args
+EXPOSE 5900
+EXPOSE 7030
+EXPOSE 3389
+ARG MKL_VER="2020.4-912"
 
 #code & mkl
 COPY homepod_root /
@@ -91,20 +88,25 @@ ENV GTK_IM_MODULE=ibus \
     XMODIFIERS=@im=ibus
 RUN ibus-daemon -r -d -x
 
+#args
+ARG MAGMA_CUDA_VER="111"
+ARG PYTHON_VERSION="3.8"
+ARG CONDA_PKG_HANDLE_VER="1.6.0"
+
 #conda
 RUN curl -o /.gemfield_install/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
     chmod +x /.gemfield_install/miniconda.sh && \
     /.gemfield_install/miniconda.sh -b -p /opt/conda && \
     rm /.gemfield_install/miniconda.sh && \
-    /opt/conda/bin/conda install -y python=$PYTHON_VERSION conda-build anaconda-client numpy pyyaml scipy ipython mkl mkl-include \
-        cffi ninja setuptools typing_extensions future six requests dataclasses cython typing conda-package-handling=${CONDA_PKG_HANDLE_VER} && \
-    /opt/conda/bin/conda install -c pytorch magma-cuda${MAGMA_CUDA_VER} &&  \
+    /opt/conda/bin/conda install -y python=$PYTHON_VERSION conda-build anaconda-client astunparse numpy pyyaml scipy ipython mkl mkl-include \
+        cffi ninja setuptools typing_extensions future six requests dataclasses cython typing && \
     /opt/conda/bin/conda clean -ya && \
     /opt/conda/bin/conda clean -y --force-pkgs-dirs
 
 ENV PATH /opt/conda/bin:$PATH
-RUN conda config --add channels pytorch
-RUN ln -sf /opt/conda/bin/python3 /opt/conda/bin/python
+RUN conda config --add channels pytorch && \
+    conda config --add channels nvidia && \
+    ln -sf /opt/conda/bin/python3 /opt/conda/bin/python
 
 #basic python package
 RUN /opt/conda/bin/pip3 install --no-cache-dir Pillow opencv-python easydict sklearn matplotlib tensorboard fonttools \
@@ -113,8 +115,9 @@ RUN /opt/conda/bin/pip3 install --no-cache-dir Pillow opencv-python easydict skl
     conda clean -ya && \
     conda clean -y --force-pkgs-dirs
 
-#torchvision
-RUN /opt/conda/bin/pip3 install --no-cache-dir --no-deps torchvision && \
+#pytorch
+#note: homepod pro version will install pytorch from gemfield channel
+RUN conda install -y magma-cuda${MAGMA_CUDA_VER} pytorch torchvision torchaudio -c pytorch -c nvidia && \
     conda clean -ya && \
     conda clean -y --force-pkgs-dirs
 
@@ -136,4 +139,34 @@ ENV KDE_FULL_SESSION=true
 ENV SHELL=/bin/bash
 ENV XDG_RUNTIME_DIR=/run/gemfield
 ENV MLAB_DNS="192.168.0.114   ai1.gemfield.org"
-#CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+
+#forward framework
+WORKDIR /.gemfield_install
+ARG TNN_VER="0.3.0"
+ARG MNN_VER="1.2.0"
+ARG NCNN_VER="20210525"
+ARG PYTHON_SO_VER="38"
+RUN git clone https://github.com/Tencent/TNN.git && cd TNN && \
+    git checkout --recurse-submodules tags/v${TNN_VER} -b v${TNN_VER}-branch && \
+    mkdir build && cd build && \
+    cmake -DCMAKE_BUILD_TYPE=RELEASE -DTNN_CONVERTER_ENABLE=ON -DTNN_ONNX2TNN_ENABLE=ON .. && make VERBOSE=1 && \
+    cp /.gemfield_install/TNN/build/tools/onnx2tnn/onnx-converter/onnx2tnn.cpython-${PYTHON_SO_VER}-x86_64-linux-gnu.so /opt/conda/lib/python${PYTHON_VERSION}/site-packages/ && \
+    cp /.gemfield_install/TNN/build/libTNN.so /lib/ && ln -s /lib/libTNN.so /lib/libTNN.so.0 && \
+    cd ../.. && rm -rf TNN
+
+RUN git clone https://github.com/Tencent/ncnn.git && cd ncnn && \
+    git checkout --recurse-submodules tags/${NCNN_VER} -b v${NCNN_VER}-branch && \
+    mkdir build && cd build && \
+    cmake -DCMAKE_BUILD_TYPE=RELEASE -DNCNN_BUILD_EXAMPLES=OFF -DNCNN_BUILD_BENCHMARK=OFF -DNCNN_BUILD_TOOLS=ON .. && make VERBOSE=1 && \
+    cp /.gemfield_install/ncnn/build/tools/onnx/onnx2ncnn /bin/ && \
+    cd ../.. && rm -rf ncnn
+
+RUN git clone https://github.com/alibaba/MNN.git && cd MNN && \
+    git checkout --recurse-submodules tags/${MNN_VER} -b v${MNN_VER}-branch && \
+    mkdir build && cd build && \
+    cmake -DCMAKE_BUILD_TYPE=RELEASE -DMNN_BUILD_CONVERTER=ON .. && make VERBOSE=1 && \
+    cp /.gemfield_install/MNN/build/MNNConvert /bin/ && \
+    cp /.gemfield_install/MNN/build/libMNN.so /lib/ && \
+    cp /.gemfield_install/MNN/build/tools/converter/libMNNConvertDeps.so /lib/ && \
+    cp /.gemfield_install/MNN/build/express/libMNN_Express.so /lib/ && \
+    cd ../.. && rm -rf MNN
