@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.1.1-cudnn8-devel-ubuntu20.04
+FROM ubuntu:20.04
 maintainer "Gemfield <gemfield@civilnet.cn>"
 
 #uncomment it in mainland china 
@@ -26,15 +26,13 @@ RUN apt update && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
-
 #vnc & boost & kde app
 RUN apt update && \
     apt install -y tigervnc-standalone-server tigervnc-xorg-extension \
-        openssh-server \
-        libboost-dev libboost-filesystem-dev libboost-program-options-dev libboost-system-dev \
-        okular kdiff3 kompare gwenview && \
+        openssh-server okular kdiff3 kompare gwenview && \
     apt clean && \
     service ssh restart && \
+    apt clean && \
     rm -rf /var/lib/apt/lists/*
 
 #kubectl
@@ -57,22 +55,16 @@ ENV LANGUAGE zh_CN.UTF-8
 EXPOSE 5900
 EXPOSE 7030
 EXPOSE 3389
-ARG MKL_VER="2020.4-912"
 
-#code & mkl
+#code
 COPY homepod_root /
-RUN wget -q https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB -O- | apt-key add - && \
-    wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | apt-key add - && \
-    wget -q https://dl-ssl.google.com/linux/linux_signing_key.pub -O- | apt-key add - && \
-    echo "deb https://apt.repos.intel.com/mkl all main" > /etc/apt/sources.list.d/intel-mkl.list && \
+RUN wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | apt-key add - && \
     echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/gemfield-vs.list && \
-    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
     apt update && \
-    apt install -y intel-mkl-64bit-${MKL_VER} code && \
+    apt install -y code && \
     apt dist-upgrade -y && \
     apt autoremove -y && \
     apt clean && \
-    bash -x /reduce_mkl_size.sh && \
     rm -rf /var/lib/apt/lists/*
 
 #user
@@ -88,17 +80,13 @@ ENV GTK_IM_MODULE=ibus \
     XMODIFIERS=@im=ibus
 RUN ibus-daemon -r -d -x
 
-#args
-ARG MAGMA_CUDA_VER="111"
-ARG PYTHON_VERSION="3.8"
-ARG CONDA_PKG_HANDLE_VER="1.6.0"
-
 #conda
+ARG PYTHON_VERSION="3.8"
 RUN curl -o /.gemfield_install/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
     chmod +x /.gemfield_install/miniconda.sh && \
     /.gemfield_install/miniconda.sh -b -p /opt/conda && \
     rm /.gemfield_install/miniconda.sh && \
-    /opt/conda/bin/conda install -y python=$PYTHON_VERSION conda-build anaconda-client astunparse numpy pyyaml scipy ipython mkl mkl-include \
+    /opt/conda/bin/conda install -y python=${PYTHON_VERSION} conda-build anaconda-client astunparse numpy pyyaml scipy ipython mkl mkl-include \
         cffi ninja setuptools typing_extensions future six requests dataclasses cython typing && \
     /opt/conda/bin/conda clean -ya && \
     /opt/conda/bin/conda clean -y --force-pkgs-dirs
@@ -116,9 +104,16 @@ RUN /opt/conda/bin/pip3 install --no-cache-dir Pillow opencv-python easydict skl
 
 #pytorch
 #note: homepod pro version will install pytorch from gemfield channel
-RUN conda install -y magma-cuda${MAGMA_CUDA_VER} pytorch torchvision torchaudio -c pytorch -c nvidia && \
+ARG MAGMA_CUDA_VER=111
+ARG CUDA_VERSION=11.1
+RUN conda install -y magma-cuda${MAGMA_CUDA_VER} pytorch torchvision torchaudio torchtext cudatoolkit=${CUDA_VERSION} -c pytorch -c nvidia && \
     conda clean -ya && \
     conda clean -y --force-pkgs-dirs
+
+#nvidia label
+LABEL com.nvidia.volumes.needed="nvidia_driver"
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 
 #user customize
 #vnc env
@@ -150,7 +145,6 @@ ARG PYTHON_SO_VER="38"
 RUN curl -L https://github.com/CivilNet/libtorch/releases/download/1.1/tensorrt.tar.gz -o tensorrt.tar.gz && \
     tar -zxf tensorrt.tar.gz && /opt/conda/bin/pip3 install tensorrt/python/tensorrt-7.2.3.4-cp38-none-linux_x86_64.whl && \
     cp tensorrt/lib/* /lib/ && rm -rf tensorrt && rm tensorrt.tar.gz && \
-    /opt/conda/bin/pip3 install --no-cache-dir 'pycuda<2021.1' && \
     conda clean -ya && \
     conda clean -y --force-pkgs-dirs
 #tnn
