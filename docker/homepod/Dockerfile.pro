@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.1.1-cudnn8-devel-ubuntu20.04
+FROM nvidia/cuda:11.3.1-cudnn8-devel-ubuntu20.04
 maintainer "Gemfield <gemfield@civilnet.cn>"
 
 #uncomment it in mainland china 
@@ -88,17 +88,13 @@ ENV GTK_IM_MODULE=ibus \
     XMODIFIERS=@im=ibus
 RUN ibus-daemon -r -d -x
 
-#args
-ARG MAGMA_CUDA_VER="111"
-ARG PYTHON_VERSION="3.8"
-ARG CONDA_PKG_HANDLE_VER="1.6.0"
-
 #conda
+ARG PYTHON_VERSION="3.8"
 RUN curl -o /.gemfield_install/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
     chmod +x /.gemfield_install/miniconda.sh && \
     /.gemfield_install/miniconda.sh -b -p /opt/conda && \
     rm /.gemfield_install/miniconda.sh && \
-    /opt/conda/bin/conda install -y python=$PYTHON_VERSION conda-build anaconda-client astunparse numpy pyyaml scipy ipython mkl mkl-include \
+    /opt/conda/bin/conda install -y python=${PYTHON_VERSION} conda-build anaconda-client astunparse numpy pyyaml scipy ipython mkl mkl-include \
         cffi ninja setuptools typing_extensions future six requests dataclasses cython typing && \
     /opt/conda/bin/conda clean -ya && \
     /opt/conda/bin/conda clean -y --force-pkgs-dirs
@@ -116,7 +112,7 @@ RUN /opt/conda/bin/pip3 install --no-cache-dir Pillow opencv-python easydict skl
 
 #pytorch
 #note: homepod pro version will install pytorch from gemfield channel
-RUN conda install -y magma-cuda${MAGMA_CUDA_VER} pytorch torchvision torchaudio -c pytorch -c nvidia && \
+RUN conda install -y magma-cuda111 pytorch torchvision torchaudio torchtext cudatoolkit=11.1 -c pytorch -c nvidia && \
     conda clean -ya && \
     conda clean -y --force-pkgs-dirs
 
@@ -146,13 +142,6 @@ ARG MNN_VER="1.2.0"
 ARG NCNN_VER="20210525"
 ARG PYTHON_SO_VER="38"
 
-#tensorrt
-RUN curl -L https://github.com/CivilNet/libtorch/releases/download/1.1/tensorrt.tar.gz -o tensorrt.tar.gz && \
-    tar -zxf tensorrt.tar.gz && /opt/conda/bin/pip3 install tensorrt/python/tensorrt-7.2.3.4-cp38-none-linux_x86_64.whl && \
-    cp tensorrt/lib/* /lib/ && rm -rf tensorrt && rm tensorrt.tar.gz && \
-    /opt/conda/bin/pip3 install --no-cache-dir 'pycuda<2021.1' && \
-    conda clean -ya && \
-    conda clean -y --force-pkgs-dirs
 #tnn
 RUN git clone https://github.com/Tencent/TNN.git && cd TNN && \
     git checkout --recurse-submodules tags/v${TNN_VER} -b v${TNN_VER}-branch && \
@@ -178,3 +167,11 @@ RUN git clone https://github.com/alibaba/MNN.git && cd MNN && \
     cp /.gemfield_install/MNN/build/tools/converter/libMNNConvertDeps.so /lib/ && \
     cp /.gemfield_install/MNN/build/express/libMNN_Express.so /lib/ && \
     cd ../.. && rm -rf MNN
+
+#tensorrt
+RUN curl -L https://github.com/CivilNet/libtorch/releases/download/homepod2.0/tensorrt.tar.gz -o tensorrt.tar.gz && \
+    tar -zxf tensorrt.tar.gz && /opt/conda/bin/pip3 install tensorrt/python/tensorrt-8.0.0.3-cp38-none-linux_x86_64.whl && \
+    cp tensorrt/lib/* /lib/ && rm -rf tensorrt && rm tensorrt.tar.gz && \
+    /opt/conda/bin/pip3 install --no-cache-dir 'pycuda<2021.1' && \
+    conda clean -ya && \
+    conda clean -y --force-pkgs-dirs

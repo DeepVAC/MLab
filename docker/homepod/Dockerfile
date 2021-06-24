@@ -141,12 +141,6 @@ ARG MNN_VER="1.2.0"
 ARG NCNN_VER="20210525"
 ARG PYTHON_SO_VER="38"
 
-#tensorrt
-RUN curl -L https://github.com/CivilNet/libtorch/releases/download/1.1/tensorrt.tar.gz -o tensorrt.tar.gz && \
-    tar -zxf tensorrt.tar.gz && /opt/conda/bin/pip3 install tensorrt/python/tensorrt-7.2.3.4-cp38-none-linux_x86_64.whl && \
-    cp tensorrt/lib/* /lib/ && rm -rf tensorrt && rm tensorrt.tar.gz && \
-    conda clean -ya && \
-    conda clean -y --force-pkgs-dirs
 #tnn
 RUN git clone https://github.com/Tencent/TNN.git && cd TNN && \
     git checkout --recurse-submodules tags/v${TNN_VER} -b v${TNN_VER}-branch && \
