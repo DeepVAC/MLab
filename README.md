@@ -97,22 +97,21 @@ docker run -it -eGEMFIELD_MODE=VNCRDP -p 3389:3389 -p 7030:7030 -p 5900:5900 -p 
 |20022  |ssh   |用于ssh客户端、sftp客户端、KDE Dolphin等|
 
 
-3. k8s集群部署方式（需要k8s集群运维经验，适合小团队的协作管理）。  
-请访问[基于k8s部署HomePod](./docs/k8s_usage.md)以获得更多部署信息。
+3. k8s集群部署方式（需要k8s集群运维经验，适合团队的协作管理）。请访问[基于k8s部署HomePod](./docs/k8s_usage.md)以获得更多部署信息。
 
 ## 2. 登录
-三种部署方式中的第一种无需赘述，使用```docker exec -it```登录即可。后两种部署成功后使用图形界面进行登录和使用。支持两种使用方式：
+三种部署方式中的第一种无需赘述，使用```docker exec -it```登录即可。后两种部署成功后使用图形界面进行登录和使用。支持如下使用方式：
 - 1，浏览器(http://your_host:7030);
 - 2，vnc客户端，比如realvnc客户端：https://www.realvnc.com/en/connect/download/viewer/ 。realvnc公司承诺viewer永远免费使用。
 - 3，rdp客户端，比如KRDC、remmina、Windows远程桌面等。
 
 ## 3. 账户信息
-MLab HomePod默认提供了如下账户信息：
+MLab HomePod默认提供了如下账户：
 - 用户:gemfield
 - 密码:deepvac
 - HOME:/home/gemfield
 
-如果要改变该默认行为，请在docker命令行上（或者k8s yaml中）注入以下环境变量：
+如果要改变该默认行为，可以在docker命令行上（或者k8s yaml中）注入以下环境变量：
 - DEEPVAC_USER=<my_name>
 - DEEPVAC_PASSWORD=<my_password>
 - HOME=<my_home_path>
