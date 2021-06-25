@@ -9,7 +9,7 @@ spec:
   nodeName: ai05
   containers:
   - name: airlock 
-    image: gemfield/homepod:1.1
+    image: gemfield/homepod:2.0
     imagePullPolicy: IfNotPresent 
     workingDir: /opt/public/airlock
     env:
@@ -19,18 +19,22 @@ spec:
       value: /please_cd_to/opt/public/airlock
     - name: DEEPVAC_USER
       value: gemfield
+    - name: DEEPVAC_PASSWORD
+      value: gemfield
+    - name: GEMFIELD_MODE
+      value: VNCRDP
     resources:
       requests:
         memory: "3Gi"
       limits:
         memory: "16Gi" 
     ports:
-    - name: tensorboard
-      containerPort: 6006
     - name: vnc
       containerPort: 5900
     - name: novnc
       containerPort: 7030
+    - name: sshd
+      containerPort: 22
     livenessProbe:
       httpGet:
         path: /
@@ -65,14 +69,14 @@ spec:
   externalIPs:
     - 192.168.0.168
   ports:
-    - port: 6007
-      targetPort: 6006
-      name: tensorboard
     - port: 27031
       targetPort: 7030
       name: novnc
     - port: 5901
       targetPort: 5900
       name: vnc
+    - port: 10022
+      targetPort: 22
+      name: sshd
   selector:
     app: airlock

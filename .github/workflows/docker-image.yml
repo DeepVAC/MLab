@@ -17,6 +17,6 @@ jobs:
         username: ${{ secrets.HUB_USERNAME }}
         password: ${{ secrets.HUB_TOKEN }}
     - name: Build the homepod base image
-      run: cd docker/11.0.3-cudnn8-devel-ubuntu20.04/ && docker build -t gemfield/homepod:11.0.3-cudnn8-devel-ubuntu20.04 .
+      run: cd docker/homepod/ && bash build_image.sh standard && bash build_image.sh pro
     - name: Push Docker image
-      run: docker push gemfield/homepod:11.0.3-cudnn8-devel-ubuntu20.04
+      run: docker push gemfield/homepod

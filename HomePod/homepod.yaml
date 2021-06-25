@@ -10,7 +10,7 @@ spec:
   nodeName: ai03
   containers:
   - name: mlab-homepod 
-    image: gemfield/homepod:1.1
+    image: gemfield/homepod:2.0
     imagePullPolicy: IfNotPresent 
     workingDir: /home/gemfield 
     env:
@@ -20,14 +20,18 @@ spec:
       value: /please_cd_to/home/gemfield
     - name: DEEPVAC_USER
       value: gemfield
+    - name: DEEPVAC_PASSWORD
+      value: gemfieldisacivilnetmaintainer
+    - name: GEMFIELD_MODE
+      value: VNCRDP
+    - name: MLAB_DNS
+      value: "192.168.0.114   ai1.gemfield.org"
     resources:
       requests:
         memory: "6Gi"
       limits:
         memory: "24Gi" 
     ports:
-    - name: tensorboard
-      containerPort: 6006
     - name: vnc
       containerPort: 5900
     - name: novnc
@@ -87,9 +91,6 @@ spec:
   externalIPs:
     - 192.168.0.34
   ports:
-    - port: 6007
-      targetPort: 6006
-      name: tensorboard
     - port: 27031
       targetPort: 7030
       name: novnc
