@@ -1,9 +1,13 @@
-FROM nvidia/cuda:11.3.1-cudnn8-devel-ubuntu20.04
+FROM nvidia/cuda:11.2.2-cudnn8-devel-ubuntu20.04
 maintainer "Gemfield <gemfield@civilnet.cn>"
 
 #uncomment it in mainland china 
 #RUN rm -f /etc/apt/sources.list.d/cuda.list /etc/apt/sources.list.d/nvidia-ml.list
 ENV DEBIAN_FRONTEND=noninteractive
+
+#forward compat feature not supported by non-tesla devices.
+RUN apt purge -y cuda-compat-11-2
+
 #base
 RUN apt update && \
     apt dist-upgrade -y && \

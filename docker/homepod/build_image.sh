@@ -6,6 +6,6 @@ if [[ $1 == "standard" ]];then
 fi
 
 if [[ $1 == "pro" ]];then
-  CUDA_VER="11.3.1"
+  CUDA_VER="11.2.2"
   docker build -t gemfield/homepod:$CUDA_VER-cudnn8-devel-ubuntu20.04 -f Dockerfile.pro .
 fi
