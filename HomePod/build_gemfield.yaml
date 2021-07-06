@@ -1,0 +1,121 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: torch-by-gemfield
+  namespace: default 
+  labels:
+    app: torch-by-gemfield
+    group: deepvac
+spec:
+  nodeName: ai03
+  containers:
+  - name: torch-by-gemfield 
+    image: gemfield/homepod:2.0-pro
+    imagePullPolicy: IfNotPresent 
+    #command: ["/bin/bash","-c","sleep infinity"] 
+    workingDir: /home/gemfield 
+    env:
+    - name: TZ 
+      value: Asia/Shanghai
+    - name: HOME
+      value: /please_cd_to/home/gemfield
+    - name: DEEPVAC_USER
+      value: gemfield
+    - name: DEEPVAC_PASSWORD
+      value: gemfield
+    - name: GEMFIELD_MODE
+      value: VNCRDP
+    - name: PACKAGE_TYPE
+      value: conda
+    - name: DESIRED_CUDA
+      value: cu112
+    - name: DESIRED_PYTHON
+      value: "3.8"
+    - name: PYTORCH_BUILD_VERSION
+      value: "1.9.0"
+    - name: PYTORCH_BUILD_NUMBER
+      value: "1"
+    - name: OVERRIDE_PACKAGE_VERSION
+      value: "1.9.0"
+    - name: TORCH_CONDA_BUILD_FOLDER
+      value: pytorch-nightly
+    - name: ANACONDA_TOKEN
+      value: 
+    - name: ANACONDA_USER
+      value: gemfield
+    resources:
+      requests:
+        memory: "6Gi"
+      limits:
+        memory: "24Gi" 
+    ports:
+    - name: vnc
+      containerPort: 5900
+    - name: novnc
+      containerPort: 7030
+    livenessProbe:
+      httpGet:
+        path: /
+        port: novnc
+      initialDelaySeconds: 60
+      periodSeconds: 3
+    volumeMounts:
+    - mountPath: /dev/shm
+      name: dshm
+    - name: pytorch
+      mountPath: /pytorch
+    - name: builder
+      mountPath: /builder
+    - name: build-gemfield
+      mountPath: /build_gemfield
+    - name: libtorch
+      mountPath: /libtorch
+    - name: final-pkgs
+      mountPath: /final_pkgs
+  hostNetwork: false
+  restartPolicy: Always 
+  volumes:
+  - name: dshm
+    emptyDir:
+      medium: Memory
+      sizeLimit: "2Gi"
+  - name: pytorch
+    hostPath:
+        path: /gemfield/hostpv/torch_by_gemfield/pytorch
+        type: Directory
+  - name: builder
+    hostPath:
+        path: /gemfield/hostpv/torch_by_gemfield/builder
+        type: Directory
+  - name: build-gemfield
+    hostPath:
+        path: /gemfield/hostpv/torch_by_gemfield/build_gemfield
+        type: Directory
+  - name: libtorch
+    hostPath:
+        path: /gemfield/hostpv/torch_by_gemfield/libtorch
+        type: Directory
+  - name: final-pkgs
+    hostPath:
+        path: /gemfield/hostpv/torch_by_gemfield/final_pkgs
+        type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gemfield-service
+  namespace: default
+  labels:
+    app: torch-by-gemfield
+spec:
+  externalIPs:
+    - 192.168.0.34
+  ports:
+    - port: 27032
+      targetPort: 7030
+      name: novnc
+    - port: 5902
+      targetPort: 5900
+      name: vnc
+  selector:
+    app: torch-by-gemfield

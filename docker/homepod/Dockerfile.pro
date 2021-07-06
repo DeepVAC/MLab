@@ -179,3 +179,22 @@ RUN curl -L https://github.com/CivilNet/libtorch/releases/download/homepod2.0/te
     /opt/conda/bin/pip3 install --no-cache-dir 'pycuda<2021.1' && \
     conda clean -ya && \
     conda clean -y --force-pkgs-dirs
+
+#gemfield channel
+RUN mkdir -p /opt/gemfield && \ 
+    conda install -y --no-deps -p /.gemfield_install/ pytorch -c gemfield && \
+    mv /.gemfield_install/lib/python3.8/site-packages/torch /opt/gemfield/ && \
+    mv /.gemfield_install/lib/python3.8/site-packages/caffe2/ /opt/gemfield/ && \
+    conda clean -ya && \
+    conda clean -y --force-pkgs-dirs && \
+    rm -rf /.gemfield_install/* 
+    
+RUN cd /opt/gemfield && \
+    curl -L https://github.com/DeepVAC/libdeepvac/releases/download/1.9.0/opencv4deepvac.tar.gz -o opencv4deepvac.tar.gz && \
+    curl -L https://github.com/DeepVAC/libdeepvac/releases/download/1.9.0/libtorch.tar.gz -o libtorch.tar.gz && \
+    tar zxvf opencv4deepvac.tar.gz && tar zxvf libtorch.tar.gz && \
+    rm -f opencv4deepvac.tar.gz libtorch.tar.gz
+RUN cd /opt/gemfield && \
+    git clone https://github.com/deepVAC/deepvac && \
+    git clone https://github.com/DeepVAC/libdeepvac
+
