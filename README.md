@@ -57,6 +57,11 @@ MLab HomePod以Docker image形式封装，是我们的深度学习训练环境�
 |CUDNN开发库        |无                    |8.1.1                     |
 |MKL静态库          |无                    |2020.4-912                |
 |pycuda包           |无                    |2020.1                    |
+|gemfield版pytorch  |无                    |1.9.0                     |
+|opencv4deepvac     |无                    |4.4.0                     |
+|libtorch静态库     |无                    |1.9.0                     |
+|deepvac项目        |无                    |/opt/gemfield/deepvac     |
+|libdeepvac项目     |无                    |/opt/gemfield/libdeepvac  |
 
 除了这些核心软件，MLab HomePod还有如下鲜明特色：
 - 无缝使用DeepVAC规范；
@@ -68,7 +73,12 @@ MLab HomePod以Docker image形式封装，是我们的深度学习训练环境�
 - libboost-dev，用于C++开发者；
 - CUDA开发库，用于基于cuda的开发，或者pytorch的源码编译；
 - MKL静态库，用于基于mkl的开发，或者libtorch的静态编译；
-- pycuda python包，用于运行TensorRT模型。
+- pycuda python包，用于运行TensorRT模型;
+- gemfield版pytorch，基于master分支构建的pytorch python包，设置```export PYTHONPATH=/opt/gemfield```环境变量后来使用（从而覆盖掉标准路径下的标准版pytorch）；
+- opencv4deepvac，opencv 4.4的静态库，为libdeepvac项目而生。路径为```/opt/gemfield/opencv4deepvac```；
+- libtorch静态库，LibTorch静态库，为libdeepvac项目而生。路径为```/opt/gemfield/libtorch```；
+- deepvac项目，https://github.com/DeepVAC/deepvac 项目在本地的克隆；
+- libdeepvac项目，https://github.com/DeepVAC/libdeepvac 项目在本地的克隆。
 
 为了支持上述功能，pro版本的镜像足足增加了10个GB。也正是因为此，homepod从2.0版本开始拆分成了标准版和pro版。
 
