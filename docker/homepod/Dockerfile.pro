@@ -175,7 +175,7 @@ RUN git clone https://github.com/alibaba/MNN.git && cd MNN && \
 #tensorrt
 RUN curl -L https://github.com/CivilNet/libtorch/releases/download/homepod2.0/tensorrt.tar.gz -o tensorrt.tar.gz && \
     tar -zxf tensorrt.tar.gz && /opt/conda/bin/pip3 install tensorrt/python/tensorrt-8.0.0.3-cp38-none-linux_x86_64.whl && \
-    cp tensorrt/lib/* /lib/ && rm -rf tensorrt && rm tensorrt.tar.gz && \
+    cp tensorrt/lib/* /lib/ && cp tensorrt/include/* /usr/include/ && rm -rf tensorrt && rm tensorrt.tar.gz && \
     /opt/conda/bin/pip3 install --no-cache-dir 'pycuda<2021.1' && \
     conda clean -ya && \
     conda clean -y --force-pkgs-dirs
