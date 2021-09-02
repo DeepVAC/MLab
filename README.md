@@ -6,14 +6,15 @@ MLab是为云上炼丹师服务的云基础设施。由两个部分组成：
 - MLab HomePod，迄今为止最先进的容器化PyTorch训练环境。
 - MLab RookPod，迄今为止最先进的成本10万人民币以下存储解决方案。
 
-以上两个MLab组件均为独立的产品，可以单独使用docker进行部署，也可以使用k8s进行部署。其宿主机OS基于Ubuntu Server LTS发行版（20.04）。
+以上两个MLab组件均为独立的产品，可以单独使用docker进行部署，也可以使用k8s进行部署。
 
 # MLab HomePod
 **迄今为止最先进的容器化PyTorch训练环境。**
 
-目前只支持X86 + Linux。具体来说，支持如下的软硬件平台：
-- X86 + Linux
-- X86 + CUDA + Linux
+支持如下的软硬件平台：
+- X86-64 + Linux
+- X86-64 + Windows10（需要安装WSL2，参考：[Windows10上使用Docker运行Linux容器](https://zhuanlan.zhihu.com/p/405329231) )
+- X86-64 + CUDA + Linux
 
 因为MLab HomePod的首要目标是提供PyTorch模型训练环境，而MLab HomePod基于docker，因此，对于不支持PyTorch训练或者docker的软硬件平台，MLab HomePod不会去进行适配。
 
