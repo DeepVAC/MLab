@@ -13,12 +13,11 @@ MLab是为云上炼丹师服务的云基础设施。由两个部分组成：
 
 支持如下的软硬件平台：
 - X86-64 + Linux
-- X86-64 + Windows10（需要安装WSL2，参考：[Windows10上使用Docker运行Linux容器](https://zhuanlan.zhihu.com/p/405329231) )
 - X86-64 + CUDA + Linux
+- X86-64 + Windows10（需要安装WSL2，参考：[Windows10上使用Docker运行Linux容器](https://zhuanlan.zhihu.com/p/405329231) )
+- X86-64 + CUDA + Windows10（在以上的基础上还需要[Enable NVIDIA CUDA in WSL 2](https://docs.microsoft.com/en-us/windows/ai/directml/gpu-cuda-in-wsl) ）
 
-因为MLab HomePod的首要目标是提供PyTorch模型训练环境，而MLab HomePod基于docker，因此，对于不支持PyTorch训练或者docker的软硬件平台，MLab HomePod不会去进行适配。
-
-MLab HomePod以Docker image形式封装，是我们的深度学习训练环境。目前最新版本为2.0，分为标准版和pro版本。规格如下：
+MLab HomePod以Docker image形式（遵循OCI规范的image）封装，是我们的深度学习训练环境。目前最新版本为2.0，分为标准版和pro版本。规格如下：
 
 |参数项             |MLab HomePod 2.0      |MLab HomePod 2.0 pro      |
 |-------------------|----------------------|--------------------------|
@@ -106,7 +105,13 @@ docker run -it -eGEMFIELD_MODE=VNCRDP -p 3389:3389 -p 7030:7030 -p 5900:5900 -p 
 |3389   |rdp   |用于rdp客户端，Windows远程桌面连接客户端|
 |5900   |vnc   |用于vnc客户端|
 |7030   |http  |用于浏览器|
-|20022  |ssh   |用于ssh客户端、sftp客户端、KDE Dolphin等|
+|20022  |ssh   |用于ssh客户端、sftp客户端、KDE Dolphin、vscode remote ssh等|
+
+注意，当使用vscode remote ssh功能时，首先在vscode上新建ssh target，然后在"Enter SSH Connection Command"输入框中输入：
+```bash
+ssh -p 20022 gemfield@<your_host_running_mlab_homepod>
+```
+密码输入:deepvac
 
 
 3. k8s集群部署方式（需要k8s集群运维经验，适合团队的协作管理）。请访问[基于k8s部署HomePod](./docs/k8s_usage.md)以获得更多部署信息。
